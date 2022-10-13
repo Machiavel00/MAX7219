@@ -12,12 +12,13 @@
 
 #define MAX_DIGITS_COUNT 8
 
-typedef struct{
-	SPI_HandleTypeDef *hspi;	  	// SPI handle to send commands over SPI port
-	GPIO_TypeDef *spi_ncs_port; 	// GPIO port of NCS signal
-	uint16_t spi_ncs_pin;	   		// GPIO pin of NCS signal
-	uint8_t digits_count;	   		// Number of digits to drive using MAX7219
-}MAX7219_Handle_TypeDef;
+typedef struct
+{
+	SPI_HandleTypeDef *hspi;	// SPI handle to send commands over SPI port
+	GPIO_TypeDef *spi_ncs_port; // GPIO port of NCS signal
+	uint16_t spi_ncs_pin;		// GPIO pin of NCS signal
+	uint8_t digits_count;		// Number of digits to drive using MAX7219
+} MAX7219_Handle_TypeDef;
 
 /**
  * @brief MAX7219 registers
@@ -48,7 +49,7 @@ typedef struct{
 #define DIGIT_OFF ((uint8_t)0b00000000)
 #define DIGIT_ON ((uint8_t)0b11111111)
 
-HAL_StatusTypeDef max7219_init(MAX7219_Handle_TypeDef * _max_7219_handle);
+HAL_StatusTypeDef max7219_init(MAX7219_Handle_TypeDef *_max_7219_handle);
 HAL_StatusTypeDef max7219_display_no_decode(uint8_t _digit_index, uint8_t _digit_value);
 HAL_StatusTypeDef max7219_erase(void);
 
