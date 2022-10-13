@@ -99,7 +99,7 @@ HAL_StatusTypeDef max7219_init(MAX7219_Handle_TypeDef *_max_7219_handle)
 		return max7219_status;
 
 	// Erase all digits
-	max7219_status = max7219_erase();
+	max7219_status = max7219_erase_no_decode();
 	if (max7219_status != HAL_OK)
 		return max7219_status;
 
@@ -120,6 +120,11 @@ HAL_StatusTypeDef max7219_display_no_decode(uint8_t _digit_index, uint8_t _digit
 	// Check if init has been called
 	CHECK_MAX7219_PARAMS();
 
+	// Set decode mode to 'no decode'
+	max7219_status = max7219_transmit(DECODE_MODE_REG_BASE, 0x00);
+	if (max7219_status != HAL_OK)
+		return max7219_status;
+
 	/* Check if digit index does not overflow actual hardware setup */
 	if (_digit_index > max7219_handle->digits_count)
 		return HAL_ERROR;
@@ -133,19 +138,79 @@ HAL_StatusTypeDef max7219_display_no_decode(uint8_t _digit_index, uint8_t _digit
 }
 
 /**
+ * @brief Display value with code B decoding.
+ * @param _digit_index 7 segment digit index (starts at 0)
+ * @param _digit_value Desired digit value to be written
+ * @retval HAL_OK on success
+ */
+HAL_StatusTypeDef max7219_display_decode(uint8_t _digit_index, uint8_t _digit_value){
+	HAL_StatusTypeDef max7219_status = HAL_OK;
+
+	// Check if init has been called
+	CHECK_MAX7219_PARAMS();
+
+	/* Check if digit index does not overflow actual hardware setup */
+	if (_digit_index > max7219_handle->digits_count)
+		return HAL_ERROR;
+
+	// Set decode mode to 'decode'
+	max7219_status = max7219_transmit(DECODE_MODE_REG_BASE, 0xFF);
+	if (max7219_status != HAL_OK)
+		return max7219_status;
+
+	// Display value
+	max7219_status = max7219_transmit(digits_registers[_digit_index], _digit_value);
+	if (max7219_status != HAL_OK)
+		return max7219_status;
+
+	return max7219_status;
+}
+
+/**
  * @brief Erase display
  * @retval HAL_OK on success
  */
-HAL_StatusTypeDef max7219_erase(void)
+HAL_StatusTypeDef max7219_erase_no_decode(void)
 {
 	HAL_StatusTypeDef max7219_status = HAL_OK;
 
 	// Check if init has been called
 	CHECK_MAX7219_PARAMS();
 
+	// Set decode mode to 'no decode'
+	max7219_status = max7219_transmit(DECODE_MODE_REG_BASE, 0x00);
+	if (max7219_status != HAL_OK)
+		return max7219_status;
+
 	for (int i = 0; i < max7219_handle->digits_count; i++)
 	{
 		max7219_status = max7219_transmit(digits_registers[i], DIGIT_OFF);
+		if (max7219_status != HAL_OK)
+			return max7219_status;
+	}
+
+	return max7219_status;
+}
+
+/**
+ * @brief Erase display
+ * @retval HAL_OK on success
+ */
+HAL_StatusTypeDef max7219_erase_decode(void)
+{
+	HAL_StatusTypeDef max7219_status = HAL_OK;
+
+	// Check if init has been called
+	CHECK_MAX7219_PARAMS();
+
+	// Set decode mode to 'decode'
+	max7219_status = max7219_transmit(DECODE_MODE_REG_BASE, 0xFF);
+	if (max7219_status != HAL_OK)
+		return max7219_status;
+
+	for (int i = 0; i < max7219_handle->digits_count; i++)
+	{
+		max7219_status = max7219_transmit(digits_registers[i], DIGIT_OFF_DECODE);
 		if (max7219_status != HAL_OK)
 			return max7219_status;
 	}

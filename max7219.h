@@ -46,11 +46,14 @@ typedef struct
 /**
  * @brief Digits values
  */
-#define DIGIT_OFF ((uint8_t)0b00000000)
-#define DIGIT_ON ((uint8_t)0b11111111)
+#define DIGIT_OFF 			((uint8_t)0b00000000)
+#define DIGIT_OFF_DECODE 	((uint8_t)0b01111111)
+#define DIGIT_ON 			((uint8_t)0b11111111)
 
 HAL_StatusTypeDef max7219_init(MAX7219_Handle_TypeDef *_max_7219_handle);
 HAL_StatusTypeDef max7219_display_no_decode(uint8_t _digit_index, uint8_t _digit_value);
-HAL_StatusTypeDef max7219_erase(void);
+HAL_StatusTypeDef max7219_display_decode(uint8_t _digit_index, uint8_t _digit_value);
+HAL_StatusTypeDef max7219_erase_no_decode(void);
+HAL_StatusTypeDef max7219_erase_decode(void);
 
 #endif /* MAX7219_MAX7219_H_ */
